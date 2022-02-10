@@ -33,7 +33,8 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
 
   Future<void> updateGardenName(String gardenName) async {
     if (gardenName.isEmpty) {
-      return Get.snackbar('빈 이름', '정원 이름을 지어주세요');
+      Get.snackbar('빈 이름', '정원 이름을 지어주세요');
+      return;
     }
     try {
       User? user = FirebaseAuth.instance.currentUser;

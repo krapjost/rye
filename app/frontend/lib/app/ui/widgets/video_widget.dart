@@ -68,7 +68,7 @@ class _VideoWidgetState extends State<VideoWidget> {
 
   @override
   void initState() {
-    _controller = VideoPlayerController.network(widget.feed.url)
+    _controller = VideoPlayerController.network(widget.feed.video_url)
       ..initialize().then((_) {
         if (mounted) {
           _controller?.setLooping(true);

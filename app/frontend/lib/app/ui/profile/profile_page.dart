@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'dart:async';
 
 import 'package:video_thumbnail/video_thumbnail.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,20 +17,10 @@ import 'package:rye/app/data/model/feedModel.dart';
 
 import 'package:get/get.dart';
 import 'package:rye/app/ui/theme/app_colors.dart';
-import 'package:rye/app/ui/widgets/thumbnail_widget.dart';
 import 'package:rye/app/ui/widgets/bottom_navigation_widget.dart';
 
 import 'package:video_player/video_player.dart';
 
-/**
-  TODO
-2. 비디오 캐싱하고 한 번 불러온 비디오면 스토리지에 다시 요청하지 않기
-3. 비디오 업로드할 때 압축해서 업로드하기
-4. 피드 페이지에서 다른 사람 이름 클릭 시 다른 사람 정원으로 이동하기
-5. 로그인한 유저가 다른 사람 정원에 접속했을 경우 리스펙트 버튼 표시
-6. 피드에서 좋아요
-7. 피드에서 댓글 버튼 누르면 댓글 페이지로 이동하기
-**/
 class ProfilePage extends StatefulWidget {
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -39,24 +28,15 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   User? firebaseUser = FirebaseAuth.instance.currentUser;
-  Future<UserModel>? user;
+  Future<UserModel>? _userModel;
   FirebaseStorage storage = FirebaseStorage.instance;
-
-  ImageFormat _format = ImageFormat.JPEG;
-  int _quality = 50;
-  int _sizeH = 0;
-  int _sizeW = 0;
-  int _timeMs = 0;
-
-  String? _tempDir;
 
   @override
   void initState() {
     super.initState();
     if (firebaseUser != null) {
-      user = UserProvider.getUserModel(firebaseUser!.uid);
+      _userModel = UserProvider.getUserModel(firebaseUser!.uid);
     }
-    getTemporaryDirectory().then((d) => _tempDir = d.path);
   }
 
   @override
@@ -77,19 +57,6 @@ class _ProfilePageState extends State<ProfilePage> {
     return VideoPlayer(controller);
   }
 
-  Future<GenThumbnailImage> getThumbnailImageWidget(String url) async {
-    GenThumbnailImage _futreImage = GenThumbnailImage(
-        thumbnailRequest: ThumbnailRequest(
-            video: url,
-            thumbnailPath: _tempDir,
-            imageFormat: _format,
-            maxHeight: _sizeH,
-            maxWidth: _sizeW,
-            timeMs: _timeMs,
-            quality: _quality));
-    return _futreImage;
-  }
-
   Future<ProfileModel> fetchProfileInfo() async {
     List<TapeModel> tapeList =
         await TapeProvider.getTapeModelListOfCurrentUser(firebaseUser?.uid);
@@ -100,7 +67,7 @@ class _ProfilePageState extends State<ProfilePage> {
     List<FeedModel> flattendFeedList =
         listOfFeedList.expand((feed) => feed).toList();
 
-    UserModel _user = await user!;
+    UserModel _user = await _userModel!;
 
     return ProfileModel(_user.name, _user.garden_name, _user.email,
         _user.description, _user.image_url, _user.respects,
@@ -129,11 +96,16 @@ class _ProfilePageState extends State<ProfilePage> {
                           alignment: Alignment.center,
                           children: [
                             FutureBuilder<UserModel>(
-                              future: user,
+                              future: _userModel,
                               builder: (BuildContext context,
                                   AsyncSnapshot snapshot) {
                                 if (snapshot.hasData) {
                                   String url = snapshot.data.image_url;
+                                  print("profile page usermodel url is $url");
+                                  if (url == "") {
+                                    url = "https://i.imgur.com/iu7Tqfg.jpeg";
+                                  }
+
                                   return Positioned(
                                     top: 0,
                                     child: Container(
@@ -339,34 +311,32 @@ class _ProfilePageState extends State<ProfilePage> {
                                                         color: Colors.white70,
                                                         width: .5),
                                                   ),
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                      Get.toNamed('/tape',
-                                                          arguments: [
-                                                            tape,
-                                                            feeds
-                                                          ]);
-                                                    },
-                                                    child: FutureBuilder<
-                                                        GenThumbnailImage>(
-                                                      future:
-                                                          getThumbnailImageWidget(
-                                                              feed.url),
-                                                      builder:
-                                                          (context, snapshot) {
-                                                        if (snapshot.hasData) {
-                                                          return snapshot.data!;
-                                                        } else if (snapshot
-                                                            .hasError) {
-                                                          return Icon(
-                                                              Icons.error);
-                                                        }
-                                                        return SpinKitRipple(
-                                                          color:
-                                                              Palette.GREY800,
-                                                        );
-                                                      },
+                                                  child: CachedNetworkImage(
+                                                    imageUrl:
+                                                        feed.thumbnail_url,
+                                                    imageBuilder: (context,
+                                                            imageProvider) =>
+                                                        Container(
+                                                      decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                            image:
+                                                                imageProvider,
+                                                            fit: BoxFit.cover,
+                                                            colorFilter:
+                                                                ColorFilter.mode(
+                                                                    Colors.red,
+                                                                    BlendMode
+                                                                        .colorBurn)),
+                                                      ),
                                                     ),
+                                                    placeholder:
+                                                        (context, url) =>
+                                                            SpinKitRipple(
+                                                                color: Palette
+                                                                    .GREY800),
+                                                    errorWidget:
+                                                        (context, url, error) =>
+                                                            Icon(Icons.error),
                                                   ),
                                                 );
                                               },

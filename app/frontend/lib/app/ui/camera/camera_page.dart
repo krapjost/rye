@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
+import 'package:camera_web/camera_web.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:rye/app/data/model/feedModel.dart';
@@ -29,19 +30,19 @@ class CameraPage extends StatefulWidget {
 
 class CameraPageState extends State<CameraPage> {
   CameraController? _controller;
-  StreamController<String> _streamController = StreamController<String>();
   List<CameraDescription>? _cameras;
   bool _isRecording = false;
+  bool _isUploading = false;
+  bool _pressStarted = false;
+  Offset _tapLocation = Offset(0, 0);
+  Offset _distanceFromTapStart = Offset(0, 0);
+  Color _emotionColor = Color.fromRGBO(0, 0, 0, 0.7);
+  CameraPlugin? _webCamera;
 
   @override
   void initState() {
     _initCamera();
     super.initState();
-
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
   }
 
   void setState(fn) {
@@ -49,7 +50,12 @@ class CameraPageState extends State<CameraPage> {
   }
 
   Future<void> _initCamera() async {
-    _cameras = await availableCameras();
+    try {
+      _cameras = await availableCameras();
+    } catch (e) {
+      Get.snackbar("get camera error", "${e}");
+    }
+    Get.snackbar("first camera", "${_cameras![0]}");
     _controller = CameraController(_cameras![0], ResolutionPreset.low);
 
     _controller!.initialize().then((_) {
@@ -72,65 +78,135 @@ class CameraPageState extends State<CameraPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final double initialFaceSize = 0;
+    final double cryingFaceSize = _distanceFromTapStart.dy > initialFaceSize
+        ? _distanceFromTapStart.dy
+        : initialFaceSize;
+    final double smilingFaceSize = _distanceFromTapStart.dy < -initialFaceSize
+        ? _distanceFromTapStart.dy * -1
+        : initialFaceSize;
 
-    if (_controller == null || !_controller!.value.isInitialized) {
-      return Scaffold(
-        body: Center(
+    final double angryFaceSize = _distanceFromTapStart.dx > initialFaceSize
+        ? _distanceFromTapStart.dx
+        : initialFaceSize;
+    final double nervousFaceSize = _distanceFromTapStart.dx < -initialFaceSize
+        ? _distanceFromTapStart.dx * -1
+        : initialFaceSize;
+
+    List<double> faceSizes = [
+      cryingFaceSize,
+      smilingFaceSize,
+      angryFaceSize,
+      nervousFaceSize
+    ];
+
+    List<Widget> content;
+    if (_isUploading ||
+        _controller == null ||
+        !_controller!.value.isInitialized) {
+      content = [
+        Center(
           child: SizedBox(
             width: 32,
             height: 32,
             child: SpinKitPulse(color: Palette.RYE, size: 100.0),
           ),
         ),
-      );
+        bottomNavBar(context, 0),
+      ];
     } else {
-      return Scaffold(
-        body: Container(
-          color: Colors.blue,
-          height: size.height,
-          width: size.width,
-          child: Stack(
-            alignment: Alignment.center,
-            children: <Widget>[
-              _buildCameraPreview(),
-              Positioned(
-                bottom: 100.0,
-                right: 15.0,
-                child: IconButton(
-                  icon: Icon(
-                    Icons.switch_camera,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    _onCameraSwitch();
-                  },
-                ),
-              ),
-              Positioned(
-                bottom: 100.0,
-                child: Center(
-                  child: IconButton(
-                    icon: Icon(
-                      (_isRecording) ? LineIcons.squareAlt : LineIcons.circle,
-                      size: 32.0,
-                      color: _isRecording ? Colors.red : Colors.black,
-                    ),
-                    onPressed: () {
-                      if (_isRecording) {
-                        stopVideoRecording();
-                      } else {
-                        startVideoRecording();
-                      }
-                    },
-                  ),
-                ),
-              ),
-              bottomNavBar(context, 0),
-            ],
+      content = <Widget>[
+        GestureDetector(
+          onLongPressDown: (detail) {
+            print("longpressDown ${detail.globalPosition}");
+            _tapLocation = detail.globalPosition;
+            if (mounted) setState(() {});
+          },
+          onLongPressStart: (detail) {
+            print("longpressStart ${detail.globalPosition}");
+            _pressStarted = true;
+            if (mounted) setState(() {});
+          },
+          onLongPressUp: () {
+            print("longpress up");
+            _tapLocation = Offset(-100, -100);
+            _distanceFromTapStart = Offset(0, 0);
+            if (mounted) setState(() {});
+          },
+          onLongPressCancel: () {
+            print("longpress canceled");
+            _tapLocation = Offset(-100, -100);
+            _distanceFromTapStart = Offset(0, 0);
+            if (mounted) setState(() {});
+          },
+          onLongPressMoveUpdate: (detail) {
+            _distanceFromTapStart = detail.offsetFromOrigin;
+            if (mounted) setState(() {});
+            print("distance from tap strat ${_distanceFromTapStart}");
+          },
+          onLongPressEnd: (detail) {
+            print("longpress End ${detail.globalPosition}");
+            _pressStarted = false;
+            _distanceFromTapStart = Offset(0, 0);
+            if (mounted) setState(() {});
+          },
+          child: _buildCameraPreview(),
+        ),
+        Positioned(
+          top: size.height / 2 - smilingFaceSize + (smilingFaceSize / 2),
+          left: size.width / 2 - smilingFaceSize / 2,
+          child: Icon(
+            LineIcons.smilingFace,
+            size: smilingFaceSize,
+            color: Colors.white
+                .withOpacity(convertZeroToOneScale(smilingFaceSize, 100)),
           ),
         ),
-      );
+        Positioned(
+          top: size.height / 2 - cryingFaceSize + (cryingFaceSize / 2),
+          left: size.width / 2 - cryingFaceSize / 2,
+          child: Icon(
+            LineIcons.cryingFace,
+            size: cryingFaceSize,
+            color: Colors.white
+                .withOpacity(convertZeroToOneScale(cryingFaceSize, 100)),
+          ),
+        ),
+        Positioned(
+          top: size.height / 2 - angryFaceSize / 2,
+          left: size.width / 2 - angryFaceSize + (angryFaceSize / 2),
+          child: Icon(
+            LineIcons.angryFace,
+            size: angryFaceSize,
+            color: Colors.white
+                .withOpacity(convertZeroToOneScale(angryFaceSize, 100)),
+          ),
+        ),
+        Positioned(
+          top: size.height / 2 - nervousFaceSize / 2,
+          left: size.width / 2 - nervousFaceSize + (nervousFaceSize / 2),
+          child: Icon(
+            LineIcons.faceWithTongue,
+            size: nervousFaceSize,
+            color: Colors.white
+                .withOpacity(convertZeroToOneScale(nervousFaceSize, 100)),
+          ),
+        ),
+        bottomNavBar(context, 0),
+      ];
     }
+
+    return Scaffold(
+      body: Container(
+        color: Colors.black,
+        height: size.height,
+        width: size.width,
+        child: Stack(
+          alignment: Alignment.center,
+          children: content,
+        ),
+      ),
+    );
   }
 
   Widget _buildCameraPreview() {
@@ -143,86 +219,59 @@ class CameraPageState extends State<CameraPage> {
       deviceRatio = size.width / size.height;
     }
 
-    return Stack(
-      children: [
-        Container(
-          width: size.width,
-          child: ClipRect(
-            child: AspectRatio(
-              aspectRatio: deviceRatio,
-              child: CameraPreview(_controller!),
-            ),
-          ),
-        ),
-        ClipRect(
+    return Container(
+      width: size.width,
+      height: size.height,
+      child: AspectRatio(
+        aspectRatio: deviceRatio,
+        child: CameraPreview(
+          _controller!,
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 20),
             child: Container(
-              decoration: BoxDecoration(color: Colors.blue.withOpacity(0.5)),
+              color: _emotionColor,
             ),
           ),
         ),
-      ],
+        // Image.network("https://i.imgur.com/7FUE5c1.jpeg"),
+      ),
     );
   }
 
-  Future<void> _onCameraSwitch() async {
-    final CameraDescription cameraDescription =
-        (_controller!.description == _cameras![0])
-            ? _cameras![1]
-            : _cameras![0];
-    if (_controller != null) {
-      await _controller?.dispose();
-    }
-    _controller = CameraController(cameraDescription, ResolutionPreset.medium);
-    _controller!.addListener(() {
-      if (mounted) setState(() {});
-      if (_controller!.value.hasError) {
-        showInSnackBar('Camera error ${_controller!.value.errorDescription}');
-      }
-    });
+  Future<String> getTemporaryFilePathOnDevice() async {
+    String filePath = '';
     try {
-      await _controller!.initialize();
-    } on CameraException catch (e) {
-      _showCameraException(e);
+      final Directory extDir = await getTemporaryDirectory();
+      print('!!!!! ext Dir is $extDir');
+      final String dirPath = '${extDir.path}/media';
+      print('dir path is $dirPath');
+      await Directory(dirPath).create(recursive: true);
+      filePath = '$dirPath/${_timestamp()}.mp4';
+      print('filepath to upload is $filePath');
+    } catch (e) {
+      print('error occured while get path ${e}');
     }
-    if (mounted) {
-      setState(() {});
-    }
+    return filePath;
   }
 
   Future<String> startVideoRecording() async {
-    print('startVideoRecording');
-    String filePath = '';
-    if (_controller!.value.isInitialized) {
-      if (mounted)
-        setState(() {
-          _isRecording = true;
-        });
-
-      if (kIsWeb) {
-        filePath = 'temp/${_timestamp()}.mp4';
-      } else {
-        try {
-          final Directory extDir = await getTemporaryDirectory();
-          print('ext Dir is $extDir');
-          final String dirPath = '${extDir.path}/media';
-          print('dir path is $dirPath');
-          await Directory(dirPath).create(recursive: true);
-          filePath = '$dirPath/${_timestamp()}.mp4';
-          print('filepath to upload is $filePath');
-        } catch (e) {
-          print('error occured while get path ${e}');
-        }
-      }
-    }
-    if (!_controller!.value.isRecordingVideo) {
+    String filePath = kIsWeb
+        ? 'temp/${_timestamp()}.mp4'
+        : await getTemporaryFilePathOnDevice();
+    print("### filepath is $filePath");
+    if (_controller!.value.isInitialized &&
+        !_controller!.value.isRecordingVideo) {
       try {
         await _controller!.startVideoRecording();
+        if (mounted)
+          setState(() {
+            _isRecording = true;
+          });
       } on CameraException catch (e) {
         _showCameraException(e);
       }
     }
+
     return filePath;
   }
 
@@ -235,38 +284,48 @@ class CameraPageState extends State<CameraPage> {
         });
 
       try {
+        XFile? thumbnail = await _controller!.takePicture();
         XFile? video = await _controller!.stopVideoRecording();
+        print("thumbnail is $thumbnail");
         print('video is $video');
-        uploadFeed(video);
+        uploadFeed(video, thumbnail);
       } on CameraException catch (e) {
         _showCameraException(e);
       }
     }
   }
 
-  Future<void> uploadFeed(XFile _video) async {
-    _streamController.add('시작');
+  Future<void> uploadFeed(XFile _video, XFile _thumbnail) async {
+    _isUploading = true;
+    if (mounted) setState(() {});
     String userId = AuthProvider.getUid();
-
     DateTime createdAt = DateTime.now();
-    String storagePath = '$userId/${createdAt.toString()}/${_video.name}';
+
+    String videoStoragePath = '$userId/${createdAt.toString()}/${_video.name}';
+    String thumbnailStoragePath =
+        '$userId/${createdAt.toString()}/thumbnail_${_video.name}';
 
     try {
-      await StorageProvider.putMedia(_video, userId, storagePath);
+      await StorageProvider.putMedia(_video, videoStoragePath);
+      await StorageProvider.putMedia(_thumbnail, thumbnailStoragePath);
     } catch (e) {
-      print('upload error $e');
+      print('Error :\n camera page \n uploadFeed \n $e');
     }
 
-    String _url = await StorageProvider.fetchMediaUrl(storagePath);
+    String _video_url = await StorageProvider.fetchMediaUrl(videoStoragePath);
+    String _thumbnail_url =
+        await StorageProvider.fetchMediaUrl(thumbnailStoragePath);
 
     FeedModel feedModel = FeedModel(
         description: "",
-        url: _url,
+        video_url: _video_url,
+        thumbnail_url: _thumbnail_url,
         created_at: createdAt,
         owner: 'sad',
         likes: 0);
 
     bool isTapeCreated = await TapeProvider.isCreated('sad', userId);
+
     if (!isTapeCreated) {
       TapeModel tapeModel = TapeModel(
         tag: 'sad',
@@ -278,7 +337,7 @@ class CameraPageState extends State<CameraPage> {
 
     FeedProvider.addFeed(feedModel);
 
-    _streamController.add('완료');
+    _isUploading = false;
     Get.offAllNamed('/profile');
     Get.snackbar('업로드 완료', '소중한 순간을 안전하게 저장했습니다.');
   }
@@ -297,6 +356,11 @@ void showInSnackBar(String message) {
 
 void logError(String code, String message) =>
     print('Error: $code\nError Message: $message');
+
+double convertZeroToOneScale(double number, double max) {
+  double toConvert = number.abs() > max ? max : number.abs();
+  return toConvert / max;
+}
 
 @override
 bool get wantKeepAlive => true;

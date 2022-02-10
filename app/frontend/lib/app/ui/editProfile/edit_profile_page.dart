@@ -35,9 +35,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
       {String userName = '',
       String gardenName = '',
       String description = ''}) async {
-    if (userName.isEmpty) return Get.snackbar('사용자 이름', '사용자 이름을 입력해주세요.');
-    if (gardenName.isEmpty) return Get.snackbar('정원 이름', '정원 이름을 입력해주세요.');
-    if (description.isEmpty) return Get.snackbar('정원 설명', '정원 설명을 입력해주세요.');
+
+    if (userName.isEmpty) {
+      Get.snackbar('사용자 이름', '사용자 이름을 입력해주세요.');
+      return;
+    };
+    if (gardenName.isEmpty) {
+      Get.snackbar('정원 이름', '정원 이름을 입력해주세요.');
+      return;
+    };
+    if (description.isEmpty) {
+      Get.snackbar('정원 설명', '정원 설명을 입력해주세요.');
+      return;
+    };
 
     String uid = AuthProvider.getUid();
     await UserProvider.updateUser(uid, 'name', userName);

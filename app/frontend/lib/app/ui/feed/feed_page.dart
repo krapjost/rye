@@ -41,6 +41,7 @@ class _FeedPageState extends State<FeedPage> {
 
   Future<List> fetchTapeListOfFeedModelList() async {
     List<TapeModel> tapeList = await fetchTapeList();
+    print("fetchTapeListOfFeedModelList\n tapeList : $tapeList");
 
     List<List<FeedModel>> tapeListOfFeedModelList = await Future.wait(tapeList
         .map((tape) async =>
@@ -54,7 +55,7 @@ class _FeedPageState extends State<FeedPage> {
     List<DocumentSnapshot> docs;
     if (_lastTape == null) {
       docs = await TapeProvider.fetchTapeDocumentList();
-      print('docs length ${docs.length}, docs is null ${docs.isEmpty}');
+      print('INFO : ui/feed/feed_page.dart :\n docs length : ${docs.length}, is docs null : ${docs.isEmpty}');
     } else {
       docs = await TapeProvider.fetchTapeDocumentList(cursor: _lastTape);
     }
@@ -68,10 +69,12 @@ class _FeedPageState extends State<FeedPage> {
       List<TapeModel> tapeModelList =
           dataList.map((data) => TapeModel.fromJson(data)).toList();
       print('tapeModelList is $tapeModelList');
+      print('tapeModelList is ${tapeModelList[0].tag}');
       _tapeList = Future.wait(tapeModelList
-          .map((tape) async =>
-              await FeedProvider.getFeedModelListOfCurrentTape(tape.tag))
+          .map((tapeModel) async =>
+              await FeedProvider.getFeedModelListOfCurrentTape(tapeModel.tag))
           .toList());
+      print("tapeList is $_tapeList");
     }
   }
 

@@ -8,15 +8,14 @@ FirebaseStorage storage = FirebaseStorage.instance;
 
 class StorageProvider {
   static Future<void> putMedia(
-      XFile video, String uid, String storagePath) async {
-    Uint8List data = await video.readAsBytes();
-    print('!!!!!! video mimetype is ${video.mimeType}');
+      XFile file, String storagePath) async {
+    Uint8List data = await file.readAsBytes();
 
     SettableMetadata metadata = SettableMetadata(
-      contentType: '${video.mimeType}',
+      contentType: '${file.mimeType}',
       cacheControl: 'max-age=60',
-      customMetadata: <String, String>{'uid': uid},
     );
+
     var storageRef = storage.ref(storagePath);
     await storageRef.putData(data, metadata);
   }

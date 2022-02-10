@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rye/app/ui/theme/app_colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -35,7 +36,8 @@ class LoginPageState extends State<LoginPage> {
   @override
   void setState(VoidCallback fn) {
     if (mounted) super.setState(fn);
-    if (_userCredential != null) Get.offNamed('/camera');
+    if (_userCredential != null)
+      kIsWeb ? Get.offNamed('/web_camera') : Get.offNamed('/camera');
   }
 
   @override

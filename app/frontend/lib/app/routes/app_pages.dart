@@ -8,9 +8,8 @@ import 'package:rye/app/ui/onboarding/create_profile_page.dart';
 import 'package:rye/app/ui/onboarding/add_profile_image_page.dart';
 
 import 'package:rye/app/ui/editProfile/edit_profile_page.dart';
-import 'package:rye/app/ui/write/write_page.dart';
 import 'package:rye/app/ui/camera/camera_page.dart';
-import 'package:rye/app/ui/tape/tape_page.dart';
+import 'package:rye/app/ui/camera/web_camera_page.dart';
 
 part './app_routes.dart';
 
@@ -21,11 +20,10 @@ class AppPages {
     GetPage(name: Routes.SIGNUP, page: () => SignupPage()),
     GetPage(name: Routes.FEED, page: () => FeedPage()),
     GetPage(name: Routes.PROFILE, page: () => ProfilePage()),
-    GetPage(name: Routes.TAPE, page: () => TapePage()),
     GetPage(name: Routes.CREATE_PROFILE, page: () => CreateProfilePage()),
     GetPage(name: Routes.ADD_PROFILE_IMAGE, page: () => AddProfileImagePage()),
     GetPage(name: Routes.EDIT_PROFILE, page: () => EditProfilePage()),
     GetPage(name: Routes.CAMERA, page: () => CameraPage()),
-    GetPage(name: Routes.WRITE, page: () => WritePage()),
+    GetPage(name: Routes.WEB_CAMERA, page: () => WebCameraPage()),
   ];
 }

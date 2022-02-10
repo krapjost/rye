@@ -5,19 +5,22 @@ part 'feedModel.g.dart';
 
 @JsonSerializable()
 class FeedModel {
-  final String url;
+  final String owner;
+  final String video_url;
+  final String thumbnail_url;
   final String description;
   final DateTime created_at;
-  final String owner;
   final int likes;
   final List<CommentModel>? comments;
 
   const FeedModel(
-      {required this.url,
+      {
+      required this.owner,
+      required this.video_url,
+      required this.thumbnail_url,
       required this.description,
       required this.created_at,
       required this.likes,
-      required this.owner,
       this.comments});
 
   factory FeedModel.fromJson(Map<String, dynamic> json) =>

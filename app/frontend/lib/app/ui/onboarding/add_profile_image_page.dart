@@ -28,7 +28,7 @@ class _AddProfileImagePageState extends State<AddProfileImagePage> {
       if (pickedFile != null) {
         if (uid != null) {
           String storagePath = '$uid/profile_image';
-          await StorageProvider.putMedia(pickedFile, uid!, storagePath);
+          await StorageProvider.putMedia(pickedFile, storagePath);
           String url = await StorageProvider.fetchMediaUrl(storagePath);
           await UserProvider.updateUser(uid!, 'image_url', url);
           Get.toNamed('/profile');
