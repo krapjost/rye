@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 
@@ -20,35 +21,26 @@ Widget bottomNavBarItem(
 }
 
 Widget bottomNavBar(BuildContext context, int currentIndex) {
-  List<Widget> items = [
-    bottomNavBarItem(Colors.grey, '/profile', LineIcons.box, 32),
-    bottomNavBarItem(Colors.white, '/camera', LineIcons.recordVinyl, 32),
-    bottomNavBarItem(Colors.grey, '/feed', LineIcons.eye, 32),
-  ];
+  final String cameraPath = kIsWeb ? '/web-camera' : '/camera';
+  List<Color> iconColors = [Colors.white, Colors.grey, Colors.grey];
 
   switch (currentIndex) {
     case 0:
-      items = [
-        bottomNavBarItem(Colors.grey, '/profile', LineIcons.box, 32),
-        bottomNavBarItem(Colors.white, '/camera', LineIcons.recordVinyl, 32),
-        bottomNavBarItem(Colors.grey, '/feed', LineIcons.eye, 32),
-      ];
+      iconColors = [Colors.white, Colors.grey, Colors.grey];
       break;
     case 1:
-      items = [
-        bottomNavBarItem(Colors.grey, '/camera', LineIcons.recordVinyl, 32),
-        bottomNavBarItem(Colors.white, '/profile', LineIcons.box, 32),
-        bottomNavBarItem(Colors.grey, '/feed', LineIcons.eye, 32),
-      ];
+      iconColors = [Colors.grey, Colors.white, Colors.grey];
       break;
     case 2:
-      items = [
-        bottomNavBarItem(Colors.grey, '/camera', LineIcons.recordVinyl, 32),
-        bottomNavBarItem(Colors.white, '/feed', LineIcons.eye, 32),
-        bottomNavBarItem(Colors.grey, '/profile', LineIcons.box, 32),
-      ];
+      iconColors = [Colors.grey, Colors.grey, Colors.white];
       break;
   }
+
+  List<Widget> items = [
+    bottomNavBarItem(iconColors[0], cameraPath, LineIcons.phone, 32),
+    bottomNavBarItem(iconColors[1], '/profile', LineIcons.box, 32),
+    bottomNavBarItem(iconColors[2], '/feed', LineIcons.eye, 32),
+  ];
 
   return Positioned(
     bottom: 10,
