@@ -38,8 +38,8 @@ Widget bottomNavBar(BuildContext context, int currentIndex) {
 
   List<Widget> items = [
     bottomNavBarItem(iconColors[0], cameraPath, LineIcons.phone, 32),
-    bottomNavBarItem(iconColors[1], '/profile', LineIcons.box, 32),
-    bottomNavBarItem(iconColors[2], '/feed', LineIcons.eye, 32),
+    bottomNavBarItem(iconColors[1], '/profile', LineIcons.circle, 32),
+    bottomNavBarItem(iconColors[2], '/feed', LineIcons.alternateCommentAlt, 32),
   ];
 
   return Positioned(

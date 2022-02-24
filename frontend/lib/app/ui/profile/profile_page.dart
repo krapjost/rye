@@ -15,7 +15,6 @@ import 'package:rye/app/data/model/feedModel.dart';
 
 import 'package:get/get.dart';
 import 'package:rye/app/ui/theme/app_colors.dart';
-import 'package:rye/app/ui/widgets/bottom_navigation_widget.dart';
 
 import 'package:video_player/video_player.dart';
 
@@ -426,7 +425,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
               ),
-              bottomNavBar(context, 1),
             ],
           ),
         ),

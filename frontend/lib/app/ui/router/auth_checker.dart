@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:rye/app/ui/profile/profile_page.dart';
-import 'package:rye/app/ui/auth/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rye/app/ui/auth/login_page.dart';
+import './root_router.dart';
 
 class AuthChecker extends StatelessWidget {
   @override
@@ -10,10 +10,10 @@ class AuthChecker extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
         if (snapshot.hasData) {
-          print('HOME PAGE ::: AUTH STATE CHANGED ::: ${snapshot.data}');
-          return ProfilePage();
+          return RootRouter();
         } else if (snapshot.hasError) {
-          return Text('firebase auth has error ::: ${snapshot.error}');
+          print("auth has error : ${snapshot.error}");
+          return LoginPage();
         } else {
           return LoginPage();
         }

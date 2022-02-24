@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:rye/app/ui/home/home_page.dart';
+import 'package:rye/app/ui/router/root_router.dart';
 import 'package:rye/app/ui/auth/login_page.dart';
 import 'package:rye/app/ui/auth/signup_page.dart';
 import 'package:rye/app/ui/profile/profile_page.dart';
@@ -15,7 +15,7 @@ part './app_routes.dart';
 
 class AppPages {
   static final pages = [
-    GetPage(name: Routes.ROOT, page: () => HomePage()),
+    GetPage(name: Routes.ROOT, page: () => RootRouter()),
     GetPage(name: Routes.LOGIN, page: () => LoginPage()),
     GetPage(name: Routes.SIGNUP, page: () => SignupPage()),
     GetPage(name: Routes.FEED, page: () => FeedPage()),

@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:rye/app/ui/theme/app_colors.dart';
 
 import 'app/routes/app_pages.dart';
-import 'app/ui/home/home_page.dart';
+import 'app/ui/router/auth_checker.dart';
 import 'app/ui/theme/app_theme.dart';
 
 Future<void> main() async {
@@ -33,7 +33,7 @@ class App extends StatelessWidget {
           );
         }
         if (snapshot.connectionState == ConnectionState.done) {
-          return HomePage();
+          return AuthChecker();
         } else {
           return Center(
             child: SpinKitDualRing(

@@ -1,16 +1,11 @@
 import 'dart:async';
 import 'dart:html' as html;
-import 'dart:ui' as ui;
 
 import 'dart:core';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:line_icons/line_icons.dart';
-
-import 'package:rye/app/ui/widgets/bottom_navigation_widget.dart';
-
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class WebCameraPage extends StatefulWidget {
   const WebCameraPage({Key? key}) : super(key: key);
@@ -21,11 +16,9 @@ class WebCameraPage extends StatefulWidget {
 
 class WebCameraPageState extends State<WebCameraPage> {
   MediaStream? _localStream;
+  MediaRecorder? _mediaRecorder;
   final _localRenderer = RTCVideoRenderer();
   bool _inCalling = false;
-  MediaRecorder? _mediaRecorder;
-  List<MediaDeviceInfo>? _cameras;
-  bool get _isRec => _mediaRecorder != null;
   List<dynamic>? cameras;
 
   bool _pressStarted = false;
@@ -79,7 +72,6 @@ class WebCameraPageState extends State<WebCameraPage> {
 
     try {
       var stream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
-      _cameras = await Helper.cameras;
       _localStream = stream;
       _localRenderer.srcObject = _localStream;
     } catch (e) {
@@ -210,178 +202,7 @@ class WebCameraPageState extends State<WebCameraPage> {
       }, //item 의 반목문 항목 형성
     );
 
-    final List<Widget> emotionIconButtons = [
-      Center(
-        child: Container(
-          margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(color: Colors.black54),
-          child: RTCVideoView(_localRenderer, mirror: true),
-        ),
-      ),
-
-      /**
-      GestureDetector(
-        onLongPressDown: (detail) {
-          print("longpressDown ${detail.globalPosition}");
-          _tapLocation = detail.globalPosition;
-          if (mounted) setState(() {});
-        },
-        onLongPressStart: (detail) {
-          print("longpressStart ${detail.globalPosition}");
-          _pressStarted = true;
-          if (mounted) setState(() {});
-        },
-        onLongPressUp: () {
-          print("longpress up");
-          _tapLocation = Offset(-100, -100);
-          _distanceFromTapStart = Offset(0, 0);
-          if (mounted) setState(() {});
-        },
-        onLongPressCancel: () {
-          print("longpress canceled");
-          _tapLocation = Offset(-100, -100);
-          _distanceFromTapStart = Offset(0, 0);
-          if (mounted) setState(() {});
-        },
-        onLongPressMoveUpdate: (detail) {
-          _distanceFromTapStart = detail.offsetFromOrigin;
-          Map<String, int> faceSizes = {
-            "sad": maxToHex(cryingFaceSize.abs()),
-            "happy": maxToHex(smilingFaceSize.abs()),
-            "angry": maxToHex(angryFaceSize.abs()),
-            "nerv": maxToHex(nervousFaceSize.abs())
-          };
-          _angryColor = Color.fromRGBO(faceSizes["angry"]!, 0, 0, 0.5);
-          _sadColor = Color.fromRGBO(0, 0, faceSizes["sad"]!, 0.5);
-          _nervColor = Color.fromRGBO(
-              0, faceSizes["nerv"]! ~/ 2, faceSizes["nerv"]! ~/ 2, 0.5);
-          _happyColor = Color.fromRGBO(0, faceSizes["happy"]!, 0, 0.5);
-          if (mounted) setState(() {});
-        },
-        onLongPressEnd: (detail) {
-          print("longpress End ${detail.globalPosition}");
-          _pressStarted = false;
-          _distanceFromTapStart = Offset(0, 0);
-          if (mounted) setState(() {});
-        },
-        child: BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 20),
-          child: Stack(
-            children: [
-              Container(
-                color: _angryColor,
-              ),
-              Container(
-                color: _sadColor,
-              ),
-              Container(
-                color: _happyColor,
-              ),
-              Container(
-                color: _nervColor,
-              ),
-            ],
-          ),
-        ),
-      ),
-      Positioned(
-        top: size.height / 2 - smilingFaceSize + (smilingFaceSize / 2),
-        left: size.width / 2 - smilingFaceSize / 2,
-        child: Icon(
-          LineIcons.smilingFace,
-          size: smilingFaceSize,
-          color: Colors.white
-              .withOpacity(convertZeroToOneScale(smilingFaceSize, 100)),
-        ),
-      ),
-      Positioned(
-        top: size.height / 2 - cryingFaceSize + (cryingFaceSize / 2),
-        left: size.width / 2 - cryingFaceSize / 2,
-        child: Icon(
-          LineIcons.cryingFace,
-          size: cryingFaceSize,
-          color: Colors.white
-              .withOpacity(convertZeroToOneScale(cryingFaceSize, 100)),
-        ),
-      ),
-      Positioned(
-        top: size.height / 2 - angryFaceSize / 2,
-        left: size.width / 2 - angryFaceSize + (angryFaceSize / 2),
-        child: Icon(
-          LineIcons.angryFace,
-          size: angryFaceSize,
-          color: Colors.white
-              .withOpacity(convertZeroToOneScale(angryFaceSize, 100)),
-        ),
-      ),
-      Positioned(
-        top: size.height / 2 - nervousFaceSize / 2,
-        left: size.width / 2 - nervousFaceSize + (nervousFaceSize / 2),
-        child: Icon(
-          LineIcons.faceWithTongue,
-          size: nervousFaceSize,
-          color: Colors.white
-              .withOpacity(convertZeroToOneScale(nervousFaceSize, 100)),
-        ),
-      ),
-      **/
-
-      Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: 90 * 3,
-              maxHeight: 90 * 4,
-            ),
-            child: Container(
-              child: faceDial,
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.blue,
-                  child: IconButton(
-                    onPressed: () {
-                      print('ddd');
-                      if (mounted)
-                        setState(() {
-                          _faceIconSize = 30;
-                        });
-                    },
-                    icon: Icon(LineIcons.phoneSlash),
-                    iconSize: _faceIconSize,
-                    color: Colors.white,
-                  )),
-            ],
-          ),
-          SizedBox(
-            height: 80,
-          ),
-        ],
-      ),
-      bottomNavBar(context, 0),
-    ];
-
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Stack(
-          alignment: Alignment.center,
-          children: emotionIconButtons,
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _inCalling ? _hangUp : _makeCall,
-        tooltip: _inCalling ? 'Hangup' : 'Call',
-        child: Icon(_inCalling ? Icons.call_end : Icons.phone),
-      ),
-    );
+    return Text("d");
   }
 
   void _switchCamera(String deviceId) async {

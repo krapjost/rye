@@ -1,75 +1,82 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:rye/app/ui/profile/profile_page.dart';
-import 'package:rye/app/ui/camera/camera_page.dart';
-import 'package:rye/app/ui/feed/feed_page.dart';
+import 'package:rye/app/ui/phone/phone_page.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:line_icons/line_icons.dart';
+
+List<Widget> pages = [
+  PhonePage(),
+  ProfilePage(),
+  Center(child: Text("page 3", style: TextStyle(color: Colors.white))),
+];
 
 class RootRouter extends StatefulWidget {
+  const RootRouter({Key? key}) : super(key: key);
+
   @override
-  _RootRouterState createState() => _RootRouterState();
+  RootRouterState createState() => RootRouterState();
 }
 
-class _RootRouterState extends State<RootRouter> {
-  int _selectedIndex = 0;
+class RootRouterState extends State<RootRouter> {
+  int _page = 0;
+  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black,
-      alignment: Alignment.center,
-      child: Container(
-        constraints: BoxConstraints(minWidth: 300, maxWidth: 500),
-        child: Scaffold(
-            body: Stack(
-          children: [
-            _pageOptions.elementAt(_selectedIndex),
-            bottomNavBar(context),
-          ],
-        )),
+    return Scaffold(
+      backgroundColor: Colors.black,
+      bottomNavigationBar: CurvedNavigationBar(
+        key: _bottomNavigationKey,
+        onTap: (index) {
+          setState(() {
+            _page = index;
+          });
+        },
+        color: Colors.brown.withOpacity(0.3),
+        backgroundColor: Colors.transparent,
+        buttonBackgroundColor: Colors.brown.shade800,
+        animationDuration: Duration(milliseconds: 200),
+        animationCurve: Curves.easeOutCirc,
+        height: 60.0,
+        items: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 8,
+                  offset: -Offset(4, 4),
+                  color: Colors.black.mix(Colors.white, 0.5)!,
+                ),
+                BoxShadow(
+                  blurRadius: 8,
+                  offset: Offset(4, 4),
+                  color: Colors.black.mix(Colors.brown, 0.7)!,
+                )
+              ],
+            ),
+            child: Icon(
+              LineIcons.phone,
+              color: Colors.white,
+            ),
+          ), // TODO add flutter_neumorphic package
+          Icon(
+            LineIcons.circle,
+            color: Colors.white,
+          ),
+          Icon(
+            LineIcons.alternateCommentAlt,
+            color: Colors.white,
+          ),
+        ],
       ),
+      body: pages[_page],
     );
   }
 }
 
-Widget bottomNavBar(BuildContext context) {
-  return Positioned(
-    bottom: 0,
-    child: Container(
-      color: Colors.transparent,
-      constraints: BoxConstraints(minWidth: 300, maxWidth: 500),
-      width: MediaQuery.of(context).size.width,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: IconButton(
-              onPressed: () {
-                Get.toNamed('/camera');
-              },
-              icon: Icon(LineIcons.plusSquare),
-            ),
-          ),
-          IconButton(
-            onPressed: () {
-              Get.toNamed('/profile');
-            },
-            icon: Icon(LineIcons.plusSquare),
-          ),
-          IconButton(
-            onPressed: () {
-              Get.toNamed('/feed');
-            },
-            icon: Icon(LineIcons.plusSquare),
-          ),
-        ],
-      ),
-    ),
-  );
+extension ColorUtils on Color {
+  Color? mix(Color? another, double amount) {
+    return Color.lerp(this, another, amount);
+  }
 }
-
-List _pageOptions = [
-  CameraPage(),
-  ProfilePage(),
-  FeedPage(),
-];
