@@ -9,6 +9,11 @@ import 'package:rye/app/ui/widgets/video_widget.dart';
 import 'package:rye/app/ui/widgets/bottom_navigation_widget.dart';
 
 class FeedPage extends StatefulWidget {
+  
+
+
+
+  
   @override
   _FeedPageState createState() => _FeedPageState();
 }
@@ -55,7 +60,8 @@ class _FeedPageState extends State<FeedPage> {
     List<DocumentSnapshot> docs;
     if (_lastTape == null) {
       docs = await TapeProvider.fetchTapeDocumentList();
-      print('INFO : ui/feed/feed_page.dart :\n docs length : ${docs.length}, is docs null : ${docs.isEmpty}');
+      print(
+          'INFO : ui/feed/feed_page.dart :\n docs length : ${docs.length}, is docs null : ${docs.isEmpty}');
     } else {
       docs = await TapeProvider.fetchTapeDocumentList(cursor: _lastTape);
     }

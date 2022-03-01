@@ -14,8 +14,7 @@ class FeedModel {
   final List<CommentModel>? comments;
 
   const FeedModel(
-      {
-      required this.owner,
+      {required this.owner,
       required this.video_url,
       required this.thumbnail_url,
       required this.description,

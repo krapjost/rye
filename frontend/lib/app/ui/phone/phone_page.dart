@@ -1,8 +1,10 @@
 import 'dart:core';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
 class PhonePage extends StatefulWidget {
   const PhonePage({Key? key}) : super(key: key);
@@ -354,16 +356,13 @@ class PhonePageState extends State<PhonePage> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           SizedBox(width: 60),
-          CircleAvatar(
-              radius: 30,
-              backgroundColor: Colors.brown,
-              child: IconButton(
-                onPressed: _inCalling ? _hangUp : _makeCall,
-                tooltip: _inCalling ? 'Hangup' : 'Call',
-                icon: Icon(_inCalling ? LineIcons.phoneSlash : LineIcons.phone),
-                iconSize: 35,
-                color: Colors.white,
-              )),
+          IconButton(
+            onPressed: _inCalling ? _hangUp : _makeCall,
+            tooltip: _inCalling ? 'Hangup' : 'Call',
+            icon: Icon(_inCalling ? LineIcons.phoneSlash : LineIcons.phone),
+            iconSize: 35,
+            color: Colors.white,
+          ),
           _pressedDialButtons.length > 1
               ? Ink(
                   width: 60,

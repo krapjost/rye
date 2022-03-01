@@ -7,8 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 FirebaseStorage storage = FirebaseStorage.instance;
 
 class StorageProvider {
-  static Future<void> putMedia(
-      XFile file, String storagePath) async {
+  static Future<void> putMedia(XFile file, String storagePath) async {
     Uint8List data = await file.readAsBytes();
 
     SettableMetadata metadata = SettableMetadata(

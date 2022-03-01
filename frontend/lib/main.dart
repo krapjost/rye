@@ -1,8 +1,8 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:get/get.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:rye/app/ui/theme/app_colors.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 import 'app/routes/app_pages.dart';
 import 'app/ui/router/auth_checker.dart';
@@ -31,8 +31,7 @@ class App extends StatelessWidget {
           return Center(
             child: Text('firebase load fail ${snapshot.error}'),
           );
-        }
-        if (snapshot.connectionState == ConnectionState.done) {
+        } else if (snapshot.hasData) {
           return AuthChecker();
         } else {
           return Center(

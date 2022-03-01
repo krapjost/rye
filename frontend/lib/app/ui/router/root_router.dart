@@ -1,13 +1,14 @@
+import 'package:flutter/cupertino.dart';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:rye/app/ui/profile/profile_page.dart';
 import 'package:rye/app/ui/phone/phone_page.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:line_icons/line_icons.dart';
 
 List<Widget> pages = [
   PhonePage(),
-  ProfilePage(),
-  Center(child: Text("page 3", style: TextStyle(color: Colors.white))),
+  Center(
+      child:
+          Container(child: Text("asd", style: TextStyle(color: Colors.white)))),
 ];
 
 class RootRouter extends StatefulWidget {
@@ -19,64 +20,126 @@ class RootRouter extends StatefulWidget {
 
 class RootRouterState extends State<RootRouter> {
   int _page = 0;
-  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      bottomNavigationBar: CurvedNavigationBar(
-        key: _bottomNavigationKey,
-        onTap: (index) {
-          setState(() {
-            _page = index;
-          });
-        },
-        color: Colors.brown.withOpacity(0.3),
+      appBar: AppBar(
+        leading: null,
+        automaticallyImplyLeading: false,
+        title: CircleRoute(_page),
+        centerTitle: true,
         backgroundColor: Colors.transparent,
-        buttonBackgroundColor: Colors.brown.shade800,
-        animationDuration: Duration(milliseconds: 200),
-        animationCurve: Curves.easeOutCirc,
-        height: 60.0,
-        items: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 8,
-                  offset: -Offset(4, 4),
-                  color: Colors.black.mix(Colors.white, 0.5)!,
-                ),
-                BoxShadow(
-                  blurRadius: 8,
-                  offset: Offset(4, 4),
-                  color: Colors.black.mix(Colors.brown, 0.7)!,
-                )
-              ],
-            ),
-            child: Icon(
-              LineIcons.phone,
-              color: Colors.white,
-            ),
-          ), // TODO add flutter_neumorphic package
-          Icon(
-            LineIcons.circle,
-            color: Colors.white,
-          ),
-          Icon(
-            LineIcons.alternateCommentAlt,
-            color: Colors.white,
-          ),
-        ],
       ),
-      body: pages[_page],
+      backgroundColor: Colors.black,
+      body: PageView(
+        onPageChanged: (index) {
+          if (mounted)
+            setState(() {
+              _page = index;
+            });
+        },
+        scrollDirection: Axis.vertical,
+        children: pages,
+      ),
     );
   }
 }
 
-extension ColorUtils on Color {
-  Color? mix(Color? another, double amount) {
-    return Color.lerp(this, another, amount);
+class CircleRoute extends StatefulWidget {
+  final int _page;
+  CircleRoute(this._page);
+
+  @override
+  State<CircleRoute> createState() => _CircleRouteState();
+}
+
+class _CircleRouteState extends State<CircleRoute>
+    with SingleTickerProviderStateMixin {
+  Animation<double>? _animation;
+  AnimationController? _controller;
+  double _gap = 13.0;
+  double _rad = 0.0;
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+        AnimationController(duration: Duration(milliseconds: 500), vsync: this);
+
+    _controller!
+      ..forward()
+      ..addStatusListener((status) {
+        print("$status");
+        if (status == AnimationStatus.completed) {
+          _controller!.stop();
+        } else if (status == AnimationStatus.dismissed) {}
+      });
+
+    _animation = Tween(begin: 0.0, end: _gap)
+        .animate(_controller!.drive(CurveTween(curve: Curves.ease)))
+      ..addListener(() {
+        setState(() {
+          _rad = _animation!.value;
+        });
+      });
   }
+
+  @override
+  void didUpdateWidget(covariant CircleRoute oldWidget) {
+    print("changed? cur=${widget._page}, old=${oldWidget._page}");
+    if (widget._page == 0) {
+      print("0");
+      _controller?.forward();
+    } else {
+      print("1");
+      _controller?.reverse();
+    }
+
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    return CustomPaint(
+      size: Size(size.width, size.height),
+      painter: CirclePainter(_rad),
+    );
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final double rad;
+  var stroke;
+
+  CirclePainter(this.rad) {
+    stroke = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..isAntiAlias = true;
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    double centerX = size.width / 2.0;
+    double centerY = size.height / 2.0;
+
+    final double maxRad = 13;
+    double curRad = rad;
+    while (curRad <= maxRad) {
+      canvas.drawCircle(Offset(centerX, centerY), curRad, stroke);
+      curRad += 3;
+    }
+  }
+
+  @override
+  bool shouldRepaint(CirclePainter oldDelegate) => true;
 }

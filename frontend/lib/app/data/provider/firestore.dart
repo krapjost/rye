@@ -33,7 +33,8 @@ class UserProvider {
       user = UserModel.fromJson(snapshot.data() as Map<String, dynamic>);
       return user;
     } catch (e) {
-      print('lib/app/data/provider/firestore.dart :\n error occured on getUserModel :\n $e');
+      print(
+          'lib/app/data/provider/firestore.dart :\n error occured on getUserModel :\n $e');
       return user;
     }
   }
@@ -51,13 +52,15 @@ class FeedProvider {
     List<FeedModel> feedList = [];
     try {
       var snapshot = await feeds.where('owner', isEqualTo: tag).get();
-      print("! snapshot: $snapshot, tag: $tag, docs : ${snapshot.docs[0].data()}");
+      print(
+          "! snapshot: $snapshot, tag: $tag, docs : ${snapshot.docs[0].data()}");
       feedList = snapshot.docs
           .map((doc) => FeedModel.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
       print('getFeedModelListOf Current tape ::::: $feedList');
     } catch (e) {
-      print('ERROR : lib/app/data/provider/firestore.dart :\n FeedProvider.getFeedModelListOfCurrentTape:\n $e');
+      print(
+          'ERROR : lib/app/data/provider/firestore.dart :\n FeedProvider.getFeedModelListOfCurrentTape:\n $e');
     }
     return feedList;
   }
@@ -164,7 +167,8 @@ class TapeProvider {
         docList = snapshot.docs.toList();
       }
     } catch (e) {
-      print('ERROR : data/provider/firestore.dart :\nTapeProvider.fetchTapeDocumentList\n:$e');
+      print(
+          'ERROR : data/provider/firestore.dart :\nTapeProvider.fetchTapeDocumentList\n:$e');
     }
     return docList;
   }
