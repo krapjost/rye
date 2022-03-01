@@ -131,7 +131,7 @@ class CirclePainter extends CustomPainter {
     stroke = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5
+      ..strokeWidth = 2
       ..isAntiAlias = true;
   }
 
@@ -144,7 +144,7 @@ class CirclePainter extends CustomPainter {
     double curRad = rad;
     while (curRad <= maxRad) {
       canvas.drawCircle(Offset(centerX, centerY), curRad, stroke);
-      curRad += 3;
+      curRad += 1;
     }
   }
 

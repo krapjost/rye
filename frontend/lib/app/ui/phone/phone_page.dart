@@ -1,10 +1,8 @@
 import 'dart:core';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:get/get.dart';
 
 class PhonePage extends StatefulWidget {
   const PhonePage({Key? key}) : super(key: key);
@@ -14,9 +12,6 @@ class PhonePage extends StatefulWidget {
 }
 
 class PhonePageState extends State<PhonePage> {
-  MediaStream? _localStream;
-  final _localRenderer = RTCVideoRenderer();
-  bool _inCalling = false;
   int _page = 0;
   List<dynamic>? cameras;
   List<Widget> _pressedDialButtons = [SizedBox()];
@@ -29,143 +24,70 @@ class PhonePageState extends State<PhonePage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    initRenderers();
-
-    navigator.mediaDevices.enumerateDevices().then((md) {
-      setState(() {
-        cameras = md.where((d) => d.kind == 'videoinput').toList();
-      });
-    });
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-    if (_inCalling) {
-      _stop();
-    }
-    _localRenderer.dispose();
-  }
-
-  void initRenderers() async {
-    await _localRenderer.initialize();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  void _makeCall() async {
-    final mediaConstraints = <String, dynamic>{
-      'audio': true,
-      'video': {
-        'mandatory': {
-          'minWidth':
-              '1280', // Provide your own width, height and frame rate here
-          'minHeight': '720',
-          'minFrameRate': '30',
-        },
-      }
-    };
-
-    try {
-      var stream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
-      _localStream = stream;
-      _localRenderer.srcObject = _localStream;
-    } catch (e) {
-      print(e.toString());
-    }
-    if (!mounted) return;
-
-    setState(() {
-      _inCalling = true;
-    });
-  }
-
-  Future<void> _stop() async {
-    try {
-      if (kIsWeb) {
-        _localStream?.getTracks().forEach((track) => track.stop());
-      }
-      await _localStream?.dispose();
-      _localStream = null;
-      _localRenderer.srcObject = null;
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
-  void _hangUp() async {
-    await _stop();
-    setState(() {
-      _inCalling = false;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
-    final double iconSize = deviceWidth > 425 ? 42.5 : deviceWidth / 10;
+    final double iconSize = deviceWidth > 425 ? 42.5 : deviceWidth / 13;
 
     List<Widget> topicButtons = [
       Icon(
-        LineIcons.faceBlowingAKiss,
+        LineIcons.book,
         size: iconSize,
         color: Colors.white,
       ),
       Icon(
-        LineIcons.splotch,
+        LineIcons.dna,
         size: iconSize,
         color: Colors.white,
       ),
       Icon(
-        LineIcons.userAstronaut,
+        LineIcons.film,
         size: iconSize,
         color: Colors.white,
       ),
       Icon(
-        LineIcons.snowflakeAlt,
+        LineIcons.bicycle,
         size: iconSize,
         color: Colors.white,
       ),
       Icon(
-        LineIcons.timesCircleAlt,
+        LineIcons.heart,
         size: iconSize,
         color: Colors.white,
       ),
       Icon(
-        LineIcons.egg,
+        LineIcons.gamepad,
         size: iconSize,
         color: Colors.white,
       ),
       Icon(
-        LineIcons.smilingFaceAlt,
+        LineIcons.music,
         size: iconSize,
         color: Colors.white,
       ),
       Icon(
-        LineIcons.gitAlt,
+        LineIcons.circle,
         size: iconSize,
-        color: Colors.white,
+        color: Colors.white38,
       ),
       Icon(
-        LineIcons.earlybirds,
+        LineIcons.circle,
         size: iconSize,
-        color: Colors.white,
+        color: Colors.white38,
       ),
       Icon(
-        LineIcons.asterisk,
+        LineIcons.random,
         size: iconSize * 0.7,
-        color: Colors.white,
+        color: Colors.brown.shade400,
       ),
       Icon(
-        LineIcons.audioFileAlt,
+        LineIcons.circle,
         size: iconSize,
-        color: Colors.white,
+        color: Colors.white38,
       ),
       Icon(
         LineIcons.hashtag,
         size: iconSize * 0.7,
-        color: Colors.white,
+        color: Colors.brown.shade400,
       ),
     ];
 
@@ -174,50 +96,80 @@ class PhonePageState extends State<PhonePage> {
         maxWidth: 300,
         maxHeight: 340,
       ),
-      child: Container(
-        width: deviceWidth * 0.8,
-        child: Center(
-          child: GridView.builder(
-            shrinkWrap: true,
-            itemCount: 12,
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 1 / 0.8,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-            ),
-            itemBuilder: (BuildContext context, int index) {
-              return Ink(
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.white.withOpacity(0.2),
-                      Colors.white.withOpacity(0.1)
-                    ],
-                  ),
-                ), // LinearGradientBoxDecoration
-                child: InkWell(
-                  highlightColor: Colors.white,
-                  onTap: () {
-                    print("pressed $index");
-                    if (mounted)
-                      setState(() {
-                        _pressedDialButtons.add(topicButtons[index]);
-                      });
-                  },
-                  customBorder: CircleBorder(),
-                  child: topicButtons[index],
-                ),
-              );
-            },
-          ),
+      child: GridView.builder(
+        shrinkWrap: true,
+        itemCount: 12,
+        physics: NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: 1 / 0.8,
         ),
+        itemBuilder: (BuildContext context, int index) {
+          return Ink(
+            padding: EdgeInsets.all(3),
+            height: 28,
+            width: 28,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+            ), // LinearGradientBoxDecoration
+            child: InkWell(
+              highlightColor: Colors.white,
+              onTap: () {
+                if (mounted)
+                  setState(() {
+                    _pressedDialButtons.add(topicButtons[index]);
+                  });
+              },
+              onLongPress: () {
+                Get.defaultDialog(
+                  radius: 10,
+                  content: Text(
+                      "There is no topic assigned to this dial button",
+                      style: TextStyle(color: Colors.white, fontSize: 18)),
+                  contentPadding: EdgeInsets.all(21),
+                  title: "Assign topic?",
+                  titleStyle: TextStyle(color: Colors.white, fontSize: 28),
+                  titlePadding: EdgeInsets.fromLTRB(21, 21, 21, 0),
+                  backgroundColor: Colors.grey.shade900,
+                  confirm: TextButton(
+                    style: ButtonStyle(
+                        fixedSize: MaterialStateProperty.all(
+                            Size.fromWidth(Get.width * 0.3)),
+                        padding: MaterialStateProperty.all(EdgeInsets.all(13)),
+                        backgroundColor: MaterialStateProperty.all(
+                          Colors.black,
+                        )),
+                    onPressed: () {
+                      print('confirm');
+                    },
+                    child: Text(
+                      "Confirm",
+                      style: TextStyle(color: Colors.brown, fontSize: 18),
+                    ),
+                  ),
+                  cancel: TextButton(
+                    style: ButtonStyle(
+                        fixedSize: MaterialStateProperty.all(
+                            Size.fromWidth(Get.width * 0.3)),
+                        padding: MaterialStateProperty.all(EdgeInsets.all(13)),
+                        backgroundColor: MaterialStateProperty.all(
+                            Colors.black.withOpacity(0.1))),
+                    onPressed: () {
+                      Get.back();
+                    },
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(color: Colors.brown, fontSize: 18),
+                    ),
+                  ),
+                );
+                print("add topic");
+              },
+              customBorder: CircleBorder(),
+              child: topicButtons[index],
+            ),
+          );
+        },
       ),
     );
 
@@ -242,7 +194,7 @@ class PhonePageState extends State<PhonePage> {
           SizedBox(height: 30),
           dialButtonGrid,
           interactionButtonRow,
-          SizedBox(height: 60),
+          SizedBox(height: 30),
         ],
       ),
     );
@@ -251,7 +203,7 @@ class PhonePageState extends State<PhonePage> {
       dialTapView,
       Center(
         child: Text(
-          "Address",
+          "topic list view",
           style: TextStyle(
             color: Colors.white,
           ),
@@ -281,11 +233,11 @@ class PhonePageState extends State<PhonePage> {
         },
         items: [
           BottomNavigationBarItem(
-              tooltip: "call", label: "call", icon: Icon(LineIcons.tty)),
+              tooltip: "call", label: "call", icon: Icon(LineIcons.braille)),
           BottomNavigationBarItem(
-              tooltip: "address",
-              label: "address",
-              icon: Icon(LineIcons.addressCardAlt)),
+              tooltip: "topic",
+              label: "topic",
+              icon: Icon(LineIcons.quoteLeft)),
           BottomNavigationBarItem(
               tooltip: "voicemail",
               label: "voicemail",
@@ -325,23 +277,21 @@ class PhonePageState extends State<PhonePage> {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  border: Border.all(width: 2, color: Colors.white),
+                  color: Colors.brown.shade800,
                   shape: BoxShape.circle,
                 ),
                 child: InkWell(
-                  onTap: _inCalling ? _hangUp : _makeCall,
+                  onTap: () {
+                    print('to call page');
+                  },
                   customBorder: CircleBorder(),
-                  child: Icon(
-                      _inCalling ? LineIcons.phoneSlash : LineIcons.phone,
-                      color: Colors.white,
-                      size: 34),
+                  child: Icon(LineIcons.phone, color: Colors.white, size: 34),
                 )),
             _pressedDialButtons.length > 1
                 ? Ink(
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      border: Border.all(width: 2, color: Colors.white),
                       shape: BoxShape.circle,
                     ), // LinearGradientBoxDecoration
                     child: InkWell(
