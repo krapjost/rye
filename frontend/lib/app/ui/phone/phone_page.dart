@@ -17,8 +17,16 @@ class PhonePageState extends State<PhonePage> {
   MediaStream? _localStream;
   final _localRenderer = RTCVideoRenderer();
   bool _inCalling = false;
+  int _page = 0;
   List<dynamic>? cameras;
   List<Widget> _pressedDialButtons = [SizedBox()];
+  final _pageViewController = PageController();
+
+  @override
+  void dispose() {
+    _pageViewController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -99,216 +107,72 @@ class PhonePageState extends State<PhonePage> {
     final double iconSize = deviceWidth > 425 ? 42.5 : deviceWidth / 10;
 
     List<Widget> topicButtons = [
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            LineIcons.faceBlowingAKiss,
-            size: iconSize,
-            color: Colors.white,
-          ),
-          SizedBox(height: 5),
-          Text(
-            "love",
-            style: TextStyle(
-              color: Colors.white54,
-            ),
-          ),
-        ],
+      Icon(
+        LineIcons.faceBlowingAKiss,
+        size: iconSize,
+        color: Colors.white,
       ),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            LineIcons.splotch,
-            size: iconSize,
-            color: Colors.white,
-          ),
-          SizedBox(height: 5),
-          Text(
-            "winter",
-            style: TextStyle(
-              color: Colors.white54,
-            ),
-          ),
-        ],
+      Icon(
+        LineIcons.splotch,
+        size: iconSize,
+        color: Colors.white,
       ),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            LineIcons.userAstronaut,
-            size: iconSize,
-            color: Colors.white,
-          ),
-          SizedBox(height: 5),
-          Text(
-            "space",
-            style: TextStyle(
-              color: Colors.white54,
-            ),
-          ),
-        ],
+      Icon(
+        LineIcons.userAstronaut,
+        size: iconSize,
+        color: Colors.white,
       ),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            LineIcons.snowflakeAlt,
-            size: iconSize,
-            color: Colors.white,
-          ),
-          SizedBox(height: 5),
-          Text(
-            "winter",
-            style: TextStyle(
-              color: Colors.white54,
-            ),
-          ),
-        ],
+      Icon(
+        LineIcons.snowflakeAlt,
+        size: iconSize,
+        color: Colors.white,
       ),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            LineIcons.timesCircleAlt,
-            size: iconSize,
-            color: Colors.white,
-          ),
-          SizedBox(height: 5),
-          Text(
-            "winter",
-            style: TextStyle(
-              color: Colors.white54,
-            ),
-          ),
-        ],
+      Icon(
+        LineIcons.timesCircleAlt,
+        size: iconSize,
+        color: Colors.white,
       ),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            LineIcons.egg,
-            size: iconSize,
-            color: Colors.white,
-          ),
-          SizedBox(height: 5),
-          Text(
-            "winter",
-            style: TextStyle(
-              color: Colors.white54,
-            ),
-          ),
-        ],
+      Icon(
+        LineIcons.egg,
+        size: iconSize,
+        color: Colors.white,
       ),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            LineIcons.smilingFaceAlt,
-            size: iconSize,
-            color: Colors.white,
-          ),
-          SizedBox(height: 5),
-          Text(
-            "winter",
-            style: TextStyle(
-              color: Colors.white54,
-            ),
-          ),
-        ],
+      Icon(
+        LineIcons.smilingFaceAlt,
+        size: iconSize,
+        color: Colors.white,
       ),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            LineIcons.gitAlt,
-            size: iconSize,
-            color: Colors.white,
-          ),
-          SizedBox(height: 5),
-          Text(
-            "winter",
-            style: TextStyle(
-              color: Colors.white54,
-            ),
-          ),
-        ],
+      Icon(
+        LineIcons.gitAlt,
+        size: iconSize,
+        color: Colors.white,
       ),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            LineIcons.earlybirds,
-            size: iconSize,
-            color: Colors.white,
-          ),
-          SizedBox(height: 5),
-          Text(
-            "winter",
-            style: TextStyle(
-              color: Colors.white54,
-            ),
-          ),
-        ],
+      Icon(
+        LineIcons.earlybirds,
+        size: iconSize,
+        color: Colors.white,
       ),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            LineIcons.materialDesignForBootstrap,
-            size: iconSize,
-            color: Colors.white,
-          ),
-          SizedBox(height: 5),
-          Text(
-            "Any topic",
-            style: TextStyle(
-              color: Colors.white54,
-            ),
-          ),
-        ],
+      Icon(
+        LineIcons.materialDesignForBootstrap,
+        size: iconSize,
+        color: Colors.white,
       ),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            LineIcons.audioFileAlt,
-            size: iconSize,
-            color: Colors.white,
-          ),
-          SizedBox(height: 5),
-          Text(
-            "Music",
-            style: TextStyle(
-              color: Colors.white54,
-            ),
-          ),
-        ],
+      Icon(
+        LineIcons.audioFileAlt,
+        size: iconSize,
+        color: Colors.white,
       ),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            LineIcons.snowflakeAlt,
-            size: iconSize,
-            color: Colors.white,
-          ),
-          SizedBox(height: 5),
-          Text(
-            "winter",
-            style: TextStyle(
-              color: Colors.white54,
-            ),
-          ),
-        ],
+      Icon(
+        LineIcons.snowflakeAlt,
+        size: iconSize,
+        color: Colors.white,
       ),
     ];
 
     Widget dialButtonGrid = ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: 300,
-        maxHeight: 400,
+        maxHeight: 340,
       ),
       child: Container(
         width: deviceWidth * 0.8,
@@ -316,14 +180,17 @@ class PhonePageState extends State<PhonePage> {
           child: GridView.builder(
             shrinkWrap: true,
             itemCount: 12,
+            physics: NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
-              childAspectRatio: 1 / 0.9,
+              childAspectRatio: 1 / 0.8,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
             ),
             itemBuilder: (BuildContext context, int index) {
               return Ink(
+                height: 38,
+                width: 38,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
@@ -350,53 +217,7 @@ class PhonePageState extends State<PhonePage> {
       ),
     );
 
-    Widget interactionButtonRow = Padding(
-      padding: EdgeInsets.only(bottom: 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          SizedBox(width: 60),
-          IconButton(
-            onPressed: _inCalling ? _hangUp : _makeCall,
-            tooltip: _inCalling ? 'Hangup' : 'Call',
-            icon: Icon(_inCalling ? LineIcons.phoneSlash : LineIcons.phone),
-            iconSize: 35,
-            color: Colors.white,
-          ),
-          _pressedDialButtons.length > 1
-              ? Ink(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.red.withOpacity(0.3), Colors.brown],
-                    ),
-                  ), // LinearGradientBoxDecoration
-                  child: InkWell(
-                    onTap: () {
-                      if (mounted)
-                        setState(() {
-                          _pressedDialButtons.removeLast();
-                        });
-                    },
-                    onLongPress: () {
-                      if (mounted)
-                        setState(() {
-                          _pressedDialButtons.clear();
-                          _pressedDialButtons.add(SizedBox());
-                        });
-                    },
-                    customBorder: CircleBorder(),
-                    child: Icon(LineIcons.times, color: Colors.white, size: 20),
-                  ),
-                )
-              : SizedBox(width: 60),
-        ],
-      ),
-    );
+    Widget interactionButtonRow = buildConstrainedBox(context);
 
     Widget pressedDialButtonRow = ConstrainedBox(
       constraints: BoxConstraints(maxWidth: deviceWidth * 0.8),
@@ -416,41 +237,128 @@ class PhonePageState extends State<PhonePage> {
           pressedDialButtonRow,
           dialButtonGrid,
           interactionButtonRow,
+          SizedBox(height: 30),
         ],
       ),
     );
 
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        appBar: TabBar(
-          indicatorColor: Colors.brown,
-          tabs: [
-            Tab(icon: Icon(LineIcons.tty)),
-            Tab(icon: Icon(LineIcons.addressCardAlt)),
-            Tab(icon: Icon(LineIcons.voicemail)),
-          ],
+    var pages = [
+      dialTapView,
+      Center(
+        child: Text(
+          "Address",
+          style: TextStyle(
+            color: Colors.white,
+          ),
         ),
-        body: TabBarView(
+      ),
+      Center(
+        child: Text(
+          "VoiceMail",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+      )
+    ];
+    return Scaffold(
+      backgroundColor: Colors.black,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _page,
+        backgroundColor: Colors.transparent,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.brown,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        onTap: (index) {
+          _pageViewController.animateToPage(index,
+              duration: Duration(milliseconds: 200), curve: Curves.bounceOut);
+        },
+        items: [
+          BottomNavigationBarItem(
+              tooltip: "call", label: "call", icon: Icon(LineIcons.tty)),
+          BottomNavigationBarItem(
+              tooltip: "address",
+              label: "address",
+              icon: Icon(LineIcons.addressCardAlt)),
+          BottomNavigationBarItem(
+              tooltip: "voicemail",
+              label: "voicemail",
+              icon: Icon(LineIcons.voicemail)),
+        ],
+      ),
+      body: PageView.builder(
+        controller: _pageViewController,
+        itemBuilder: (BuildContext context, int index) {
+          return pages[index % pages.length];
+        },
+        onPageChanged: (index) {
+          setState(() {
+            _page = index % pages.length;
+          });
+        },
+      ),
+    );
+  }
+
+  ConstrainedBox buildConstrainedBox(BuildContext context) {
+    var width = MediaQuery.of(context).size.width * 0.8;
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: 300),
+      child: Container(
+        width: width,
+        height: 80,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            dialTapView,
-            Center(
-              child: Text(
-                "Address",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
+            SizedBox(
+              width: width / 4,
+              height: 50,
+            ),
+            SizedBox(
+              width: width / 4,
+              child: IconButton(
+                onPressed: _inCalling ? _hangUp : _makeCall,
+                tooltip: _inCalling ? 'Hangup' : 'Call',
+                icon: Icon(_inCalling ? LineIcons.phoneSlash : LineIcons.phone),
+                iconSize: 35,
+                color: Colors.white,
               ),
             ),
-            Center(
-              child: Text(
-                "VoiceMail",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            )
+            _pressedDialButtons.length > 1
+                ? Ink(
+                    width: width / 4,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white60,
+                      border: Border.all(width: 2, color: Colors.white),
+                      shape: BoxShape.circle,
+                    ), // LinearGradientBoxDecoration
+                    child: InkWell(
+                      onTap: () {
+                        if (mounted)
+                          setState(() {
+                            _pressedDialButtons.removeLast();
+                          });
+                      },
+                      onLongPress: () {
+                        if (mounted)
+                          setState(() {
+                            _pressedDialButtons.clear();
+                            _pressedDialButtons.add(SizedBox());
+                          });
+                      },
+                      customBorder: CircleBorder(
+                          side: BorderSide(
+                              width: 2,
+                              color: Colors.white,
+                              style: BorderStyle.solid)),
+                      child:
+                          Icon(LineIcons.times, color: Colors.white, size: 20),
+                    ),
+                  )
+                : SizedBox(width: width / 4, height: 50),
           ],
         ),
       ),

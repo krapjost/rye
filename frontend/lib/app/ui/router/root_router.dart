@@ -1,5 +1,4 @@
-import 'package:flutter/cupertino.dart';
-import 'dart:math' as math;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:rye/app/ui/profile/profile_page.dart';
 import 'package:rye/app/ui/phone/phone_page.dart';
@@ -22,6 +21,11 @@ class RootRouterState extends State<RootRouter> {
   int _page = 0;
 
   @override
+  void setState(VoidCallback fn) {
+    super.setState(fn);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -30,18 +34,26 @@ class RootRouterState extends State<RootRouter> {
         title: CircleRoute(_page),
         centerTitle: true,
         backgroundColor: Colors.transparent,
+        shadowColor: Colors.brown.withOpacity(0.9),
       ),
       backgroundColor: Colors.black,
-      body: PageView(
-        onPageChanged: (index) {
-          if (mounted)
-            setState(() {
-              _page = index;
-            });
-        },
-        scrollDirection: Axis.vertical,
-        children: pages,
-      ),
+      body: buildPageView(),
+    );
+  }
+
+  PageView buildPageView() {
+    return PageView.builder(
+      dragStartBehavior: DragStartBehavior.start,
+      onPageChanged: (index) {
+        if (mounted)
+          setState(() {
+            _page = index % pages.length;
+          });
+      },
+      scrollDirection: Axis.vertical,
+      itemBuilder: (BuildContext context, int idx) {
+        return pages[idx % pages.length];
+      },
     );
   }
 }
@@ -69,7 +81,6 @@ class _CircleRouteState extends State<CircleRoute>
     _controller!
       ..forward()
       ..addStatusListener((status) {
-        print("$status");
         if (status == AnimationStatus.completed) {
           _controller!.stop();
         } else if (status == AnimationStatus.dismissed) {}
@@ -86,12 +97,9 @@ class _CircleRouteState extends State<CircleRoute>
 
   @override
   void didUpdateWidget(covariant CircleRoute oldWidget) {
-    print("changed? cur=${widget._page}, old=${oldWidget._page}");
     if (widget._page == 0) {
-      print("0");
       _controller?.forward();
     } else {
-      print("1");
       _controller?.reverse();
     }
 
