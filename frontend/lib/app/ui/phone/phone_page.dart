@@ -153,8 +153,8 @@ class PhonePageState extends State<PhonePage> {
         color: Colors.white,
       ),
       Icon(
-        LineIcons.materialDesignForBootstrap,
-        size: iconSize,
+        LineIcons.asterisk,
+        size: iconSize * 0.7,
         color: Colors.white,
       ),
       Icon(
@@ -163,8 +163,8 @@ class PhonePageState extends State<PhonePage> {
         color: Colors.white,
       ),
       Icon(
-        LineIcons.snowflakeAlt,
-        size: iconSize,
+        LineIcons.hashtag,
+        size: iconSize * 0.7,
         color: Colors.white,
       ),
     ];
@@ -189,17 +189,21 @@ class PhonePageState extends State<PhonePage> {
             ),
             itemBuilder: (BuildContext context, int index) {
               return Ink(
-                height: 38,
-                width: 38,
+                height: 30,
+                width: 30,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black],
+                    colors: [
+                      Colors.white.withOpacity(0.2),
+                      Colors.white.withOpacity(0.1)
+                    ],
                   ),
                 ), // LinearGradientBoxDecoration
                 child: InkWell(
+                  highlightColor: Colors.white,
                   onTap: () {
                     print("pressed $index");
                     if (mounted)
@@ -220,7 +224,7 @@ class PhonePageState extends State<PhonePage> {
     Widget interactionButtonRow = buildConstrainedBox(context);
 
     Widget pressedDialButtonRow = ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: deviceWidth * 0.8),
+      constraints: BoxConstraints(maxWidth: 300),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -235,9 +239,10 @@ class PhonePageState extends State<PhonePage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           pressedDialButtonRow,
+          SizedBox(height: 30),
           dialButtonGrid,
           interactionButtonRow,
-          SizedBox(height: 30),
+          SizedBox(height: 60),
         ],
       ),
     );
@@ -313,25 +318,29 @@ class PhonePageState extends State<PhonePage> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             SizedBox(
-              width: width / 4,
-              height: 50,
+              width: 60,
+              height: 60,
             ),
-            SizedBox(
-              width: width / 4,
-              child: IconButton(
-                onPressed: _inCalling ? _hangUp : _makeCall,
-                tooltip: _inCalling ? 'Hangup' : 'Call',
-                icon: Icon(_inCalling ? LineIcons.phoneSlash : LineIcons.phone),
-                iconSize: 35,
-                color: Colors.white,
-              ),
-            ),
+            Ink(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2, color: Colors.white),
+                  shape: BoxShape.circle,
+                ),
+                child: InkWell(
+                  onTap: _inCalling ? _hangUp : _makeCall,
+                  customBorder: CircleBorder(),
+                  child: Icon(
+                      _inCalling ? LineIcons.phoneSlash : LineIcons.phone,
+                      color: Colors.white,
+                      size: 34),
+                )),
             _pressedDialButtons.length > 1
                 ? Ink(
-                    width: width / 4,
-                    height: 50,
+                    width: 60,
+                    height: 60,
                     decoration: BoxDecoration(
-                      color: Colors.white60,
                       border: Border.all(width: 2, color: Colors.white),
                       shape: BoxShape.circle,
                     ), // LinearGradientBoxDecoration
@@ -358,7 +367,7 @@ class PhonePageState extends State<PhonePage> {
                           Icon(LineIcons.times, color: Colors.white, size: 20),
                     ),
                   )
-                : SizedBox(width: width / 4, height: 50),
+                : SizedBox(width: 60, height: 60),
           ],
         ),
       ),
