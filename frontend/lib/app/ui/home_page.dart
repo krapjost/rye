@@ -9,14 +9,14 @@ List<Widget> pages = [
           Container(child: Text("asd", style: TextStyle(color: Colors.white)))),
 ];
 
-class RootRouter extends StatefulWidget {
-  const RootRouter({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   RootRouterState createState() => RootRouterState();
 }
 
-class RootRouterState extends State<RootRouter> {
+class RootRouterState extends State<HomePage> {
   int _page = 0;
 
   @override

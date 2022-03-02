@@ -1,27 +1,19 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:rye/app/ui/theme/app_colors.dart';
-import 'package:stacked_services/stacked_services.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'app/routes/app_pages.dart';
-import 'app/ui/router/auth_checker.dart';
-import 'app/ui/theme/app_theme.dart';
+import 'app/ui/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  runApp(
-    GetMaterialApp(
-      initialRoute: Routes.ROOT,
-      theme: appThemeData,
-      getPages: AppPages.pages,
-      home: App(),
-    ),
-  );
+  runApp(const ProviderScope(child: MaterialApp(home: App())));
 }
 
 class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -32,11 +24,20 @@ class App extends StatelessWidget {
             child: Text('firebase load fail ${snapshot.error}'),
           );
         } else if (snapshot.hasData) {
-          return AuthChecker();
+          return StreamBuilder(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+              if (snapshot.hasData) {
+                return const HomePage();
+              } else {
+                return const HomePage();
+              }
+            },
+          );
         } else {
-          return Center(
+          return const Center(
             child: SpinKitDualRing(
-              color: Palette.GREY800,
+              color: Colors.white,
             ),
           );
         }

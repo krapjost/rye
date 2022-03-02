@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:rye/app/ui/theme/app_colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -36,8 +34,7 @@ class LoginPageState extends State<LoginPage> {
   @override
   void setState(VoidCallback fn) {
     if (mounted) super.setState(fn);
-    if (_userCredential != null)
-      kIsWeb ? Get.offNamed('/web_camera') : Get.offNamed('/camera');
+    if (_userCredential != null) print("logged in");
   }
 
   @override
@@ -196,8 +193,8 @@ class LoginPageState extends State<LoginPage> {
                         ),
                         TextButton(
                           onPressed: () {
-                            print('pressed');
-                            Get.toNamed('/signup');
+                            print('to signup page');
+                            /* Get.toNamed('/signup'); */
                           },
                           child: Text(
                             '회원가입',
@@ -237,15 +234,19 @@ class LoginPageState extends State<LoginPage> {
       } on FirebaseAuthException catch (e) {
         print('error code is ${e.code}');
         if (e.code == 'user-not-found') {
-          Get.snackbar('로그인 에러', '가입된 사용자가 없습니다.');
+          /* Get.snackbar('로그인 에러', '가입된 사용자가 없습니다.'); */
+          print("login error");
         } else if (e.code == 'wrong-password') {
-          Get.snackbar('로그인 에러', '비밀번호를 잘못 입력하셨습니다.');
+          /* Get.snackbar('로그인 에러', '비밀번호를 잘못 입력하셨습니다.'); */
+          print("login error");
         } else if (e.code == 'invalid-email') {
-          Get.snackbar('로그인 에러', '잘못된 이메일 형식입니다.');
+          /* Get.snackbar('로그인 에러', '잘못된 이메일 형식입니다.'); */
+          print("login error");
         }
       }
     } else {
-      Get.snackbar('로그인 에러', '이메일과 비밀번호를 입력해주세요.');
+      /* Get.snackbar('로그인 에러', '이메일과 비밀번호를 입력해주세요.'); */
+      print("login error");
     }
   }
 }
