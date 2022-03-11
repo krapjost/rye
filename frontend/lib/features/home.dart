@@ -1,12 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:rye/app/ui/phone/phone_page.dart';
+import 'package:rye/features/outside/phone/phone_page.dart';
+import 'package:rye/features/inside/garden_page.dart';
 
 List<Widget> pages = [
+  GardenPage(),
   PhonePage(),
-  Center(
-      child:
-          Container(child: Text("asd", style: TextStyle(color: Colors.white)))),
 ];
 
 class Home extends StatefulWidget {
@@ -33,7 +32,7 @@ class RootRouterState extends State<Home> {
         title: CircleRoute(_page),
         centerTitle: true,
         backgroundColor: Colors.transparent,
-        shadowColor: Colors.brown.withOpacity(0.9),
+        shadowColor: Colors.transparent,
       ),
       backgroundColor: Colors.black,
       body: buildPageView(),

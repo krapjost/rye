@@ -3,9 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:rye/app/data/model/userModel.dart';
-import 'package:rye/app/ui/theme/app_colors.dart';
-import 'package:rye/app/data/provider/firestore.dart';
 
 class SignupPage extends StatefulWidget {
   @override
